@@ -6,20 +6,22 @@ from consts import default_bot_settings, ALLOWED_UPDATES
 from cmnds import commands
 from loguru import logger
 from dishka.integrations.aiogram import setup_dishka
-from providers import DbProvider, make_async_container
 from utils import setup_logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from roles.init import add_user_role_to_db
 from users.init import add_superusers_to_db
+from providers import container
+from router import router as index_router
 
 async def main():
-    storage = RedisStorage.from_url(f'redis://{settings.redis_user}:{settings.redis_password}@redis:{settings.redis_port}', connection_kwargs={"password": settings.redis_password})
+    storage = RedisStorage.from_url(f'redis://default:{settings.redis_password}@redis:{settings.redis_port}', connection_kwargs={"password": settings.redis_password})
     setup_logger()
-    container = make_async_container(DbProvider())
 
     async with container() as c:
         session = await c.get(AsyncSession)
         await add_user_role_to_db(session)
+    async with container() as c:
+        session = await c.get(AsyncSession)
         await add_superusers_to_db(session)
 
     async with Bot(token=settings.token, default=default_bot_settings, storage=storage) as bot:
@@ -27,6 +29,7 @@ async def main():
         await bot.delete_webhook(drop_pending_updates=True)
         try:
             dp = Dispatcher(storage=storage)
+            dp.include_routers(index_router)
 
             setup_dishka(container=container, router=dp, auto_inject=True)
 

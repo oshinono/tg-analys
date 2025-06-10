@@ -32,6 +32,13 @@ class BaseRepository:
         return result.scalar_one()
     
     @classmethod
+    async def create_all(cls, data: list[BaseCreate], session: AsyncSession) -> list[Base]:
+        query = insert(cls.model).values([data.model_dump() for data in data]).returning(cls.model)
+        result = await session.execute(query)
+        await session.commit()
+        return result.scalars().all()
+    
+    @classmethod
     async def update(cls, id: uuid.UUID, data: BaseUpdate, session: AsyncSession) -> Base:
         result = await session.execute(update(cls.model).where(cls.model.id == id).values(**data.model_dump(exclude_unset=True)).returning(cls.model))
         await session.commit()

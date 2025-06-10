@@ -10,7 +10,6 @@ class UserCreate(BaseCreate):
     role_guid: uuid.UUID
 
 class UserUpdate(BaseUpdate):
-    id: Optional[int] = None
     first_name: Optional[str] = None
     username: Optional[str] = None
     phone_number: Optional[str] = None

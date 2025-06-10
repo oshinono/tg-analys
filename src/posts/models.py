@@ -3,11 +3,12 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, ForeignKey
 from datetime import datetime
 from utils import TimestampType
+from sqlalchemy.types import BigInteger
 
 class Post(Base):
     __tablename__ = "posts"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
     url: Mapped[str] = mapped_column(String(255), nullable=False)
 
     views_count: Mapped[int] = mapped_column()

@@ -4,7 +4,6 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     token: str
 
-    redis_user: str 
     redis_password: str
     redis_port: str
 

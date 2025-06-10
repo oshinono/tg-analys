@@ -1,7 +1,11 @@
-from abc import ABC, abstractmethod
 from gspread_asyncio import AsyncioGspreadClientManager
 
-class BaseGTParser(ABC):
+"""
+Пока будем считать, что будет один лист с каналами и отдельный лист с юзерами.
+"""
+
+
+class BaseGTParser:
     """
     Абстрактный класс парсера Google Tables -> модельки SQLAlchemy.
     """
@@ -11,7 +15,7 @@ class BaseGTParser(ABC):
         self._table_url = table_url
         self._agcm = agcm
 
-    async def parse_all_rows(self, worksheets: list[int] | None = None, all_worksheets: bool = False) -> list[list[list[str]]]:
+    async def _parse_all_rows(self, worksheets: list[int] | None = None, all_worksheets: bool = False) -> list[list[list[str]]]:
         agc = await self._agcm.authorize()
         spreadsheet = await agc.open_by_url(self._table_url)
 
