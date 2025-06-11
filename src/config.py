@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     our_channels_ids: list[int]
     superuser_tg_ids: list[int]
 
+    admin_permission_level: int
+    smm_permission_level: int
+    user_permission_level: int
+    superuser_permission_level: int
+
     google_table_channels_url: str
     google_table_users_url: str
 

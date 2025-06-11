@@ -12,26 +12,32 @@ from roles.init import add_user_role_to_db
 from users.init import add_superusers_to_db
 from providers import container
 from router import router as index_router
+from users.router import router as users_router
+from database import get_async_session
+
 
 async def main():
-    storage = RedisStorage.from_url(f'redis://default:{settings.redis_password}@redis:{settings.redis_port}', connection_kwargs={"password": settings.redis_password})
     setup_logger()
 
     async with container() as c:
         session = await c.get(AsyncSession)
         await add_user_role_to_db(session)
+        await session.close()
     async with container() as c:
         session = await c.get(AsyncSession)
         await add_superusers_to_db(session)
+        await session.close()
 
+    storage = RedisStorage.from_url(f'redis://default:{settings.redis_password}@redis:{settings.redis_port}', connection_kwargs={"password": settings.redis_password})
+        
     async with Bot(token=settings.token, default=default_bot_settings, storage=storage) as bot:
         await bot.set_my_commands(commands)
         await bot.delete_webhook(drop_pending_updates=True)
         try:
             dp = Dispatcher(storage=storage)
-            dp.include_routers(index_router)
+            dp.include_routers(index_router, users_router)
 
-            setup_dishka(container=container, router=dp, auto_inject=True)
+            setup_dishka(container=container, router=dp)
 
             bot_info = await bot.get_me()
             logger.info(f"Бот запущен | {bot_info.full_name}, @{bot_info.username} | {bot_info.url}")

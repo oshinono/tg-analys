@@ -7,6 +7,7 @@ async def add_user_role_to_db(session: AsyncSession) -> bool:
     try:
         data = RoleCreate(name="user", permission_level=0)
         user_role = await RoleService.create(data, session=session)
+        logger.info("Роль пользователя успешно добавлена")
         return user_role is not None
     except Exception as e:
         logger.error(f"Ошибка при добавлении роли пользователя: {e}")

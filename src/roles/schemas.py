@@ -1,10 +1,12 @@
 from schemas import BaseCreate, BaseUpdate
 from typing import Optional
+from roles.enums import Roles
 
 class RoleCreate(BaseCreate):
-    name: str
+    name: Roles
     permission_level: int
+    
 
 class RoleUpdate(BaseUpdate):
-    name: Optional[str] = None
+    name: Optional[Roles] = None
     permission_level: Optional[int] = None
