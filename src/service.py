@@ -9,7 +9,7 @@ class BaseService:
     repository: BaseRepository = None
     
     @classmethod
-    async def get_by_id(cls, id: uuid.UUID, session: AsyncSession) -> Base:
+    async def get_by_id(cls, id: uuid.UUID | int, session: AsyncSession) -> Base:
         return await cls.repository.get_by_id(id, session)
 
     @classmethod
@@ -29,9 +29,9 @@ class BaseService:
         return await cls.repository.create_all(data, session)
     
     @classmethod
-    async def update(cls, id: uuid.UUID, data: BaseUpdate, session: AsyncSession) -> Base:
+    async def update(cls, id: uuid.UUID | int, data: BaseUpdate, session: AsyncSession) -> Base:
         return await cls.repository.update(id, data, session)
     
     @classmethod
-    async def delete(cls, id: uuid.UUID, session: AsyncSession) -> bool:
+    async def delete(cls, id: uuid.UUID | int, session: AsyncSession) -> bool:
         return await cls.repository.delete(id, session)

@@ -8,8 +8,8 @@ class AccessFilter(BaseDbFilter):
 
     async def __call__(self, event) -> bool:
         user_id: int = event.from_user.id
-        user = await UserService.get_by_id(user_id, await self._get_session())
-        if not user:
-            return False
-        
-        return user.role.name == self._role.name or user.role.permission_level >= self._role.permission_level
+        async for session in self._get_session():
+            user = await UserService.get_by_id(user_id, session)
+            if not user:
+                return False
+            return user.role.name == self._role.name or user.role.permission_level >= self._role.permission_level

@@ -20,7 +20,7 @@ class BaseRepository:
         return result.scalar_one_or_none()
     
     @classmethod
-    async def get_by_id(cls, id: uuid.UUID, session: AsyncSession) -> Base | None:
+    async def get_by_id(cls, id: uuid.UUID | int, session: AsyncSession) -> Base | None:
         result = await session.execute(select(cls.model).where(cls.model.id == id))
         return result.scalar_one_or_none()
     
@@ -39,13 +39,13 @@ class BaseRepository:
         return result.scalars().all()
     
     @classmethod
-    async def update(cls, id: uuid.UUID, data: BaseUpdate, session: AsyncSession) -> Base:
-        result = await session.execute(update(cls.model).where(cls.model.id == id).values(**data.model_dump(exclude_unset=True)).returning(cls.model))
+    async def update(cls, id: uuid.UUID | int, data: BaseUpdate, session: AsyncSession) -> Base:
+        result = await session.execute(update(cls.model).where(cls.model.id == id).values(**data.model_dump(exclude_unset=True, exclude_none=True)).returning(cls.model))
         await session.commit()
         return result.scalar_one()
     
     @classmethod
-    async def delete(cls, id: uuid.UUID, session: AsyncSession) -> bool:
+    async def delete(cls, id: uuid.UUID | int, session: AsyncSession) -> bool:
         result = await session.execute(delete(cls.model).where(cls.model.id == id))
         await session.commit()
         return result.rowcount > 0
