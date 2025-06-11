@@ -5,7 +5,6 @@ from config import settings
 from consts import default_bot_settings, ALLOWED_UPDATES
 from cmnds import commands
 from loguru import logger
-from dishka.integrations.aiogram import setup_dishka
 from utils import setup_logger
 from sqlalchemy.ext.asyncio import AsyncSession
 from roles.init import add_user_role_to_db
@@ -13,6 +12,7 @@ from users.init import add_superusers_to_db
 from providers import container
 from router import router as index_router
 from users.router import router as users_router
+from channels.router import router as channels_router
 from middlewares import DbSessionMiddleware
 
 async def main():
@@ -30,7 +30,8 @@ async def main():
         await bot.delete_webhook(drop_pending_updates=True)
         try:
             dp = Dispatcher(storage=storage)
-            dp.include_routers(index_router, users_router)
+            dp.include_routers(index_router, users_router, channels_router)
+            
             dp.update.middleware(DbSessionMiddleware())
 
             # setup_dishka(container=container, router=dp)

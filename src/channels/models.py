@@ -12,3 +12,6 @@ class Channel(Base):
     url: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
 
     posts: Mapped[list["Post"]] = relationship(lazy="selectin", cascade="all, delete")
+
+    def __str__(self) -> str:
+        return self.title

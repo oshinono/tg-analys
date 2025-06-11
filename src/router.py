@@ -4,17 +4,20 @@ from aiogram.types import Message, CallbackQuery
 from roles.enums import Roles
 from roles.filters import AccessFilter
 from keyboards import get_index_keyboard
+from aiogram.fsm.context import FSMContext
 
 router = Router()
 router.message.filter(AccessFilter(role=Roles.USER))
 router.callback_query.filter(AccessFilter(role=Roles.USER))
 
 @router.message(CommandStart())
-async def start_command(message: Message):
+async def start_command(message: Message, state: FSMContext):
+    await state.clear()
     await message.answer("Привет! Я бот для анализа постов в Telegram. Если ты тут, значит ты есть в списке",
                          reply_markup=await get_index_keyboard())
     
 @router.callback_query(F.data == "index")
-async def index_callback(callback: CallbackQuery):
+async def index_callback(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
     await callback.message.edit_text("Привет! Я бот для анализа постов в Telegram. Если ты тут, значит ты есть в списке",
                                     reply_markup=await get_index_keyboard())

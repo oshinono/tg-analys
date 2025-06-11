@@ -4,7 +4,7 @@ from google.oauth2.service_account import Credentials
 def get_creds():
     # To obtain a service account JSON file, follow these steps:
     # https://gspread.readthedocs.io/en/latest/oauth2.html#for-bots-using-service-account
-    creds = Credentials.from_service_account_file("oauth/service_account.json")
+    creds = Credentials.from_service_account_file("src/oauth/service_account.json")
     scoped = creds.with_scopes([
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",

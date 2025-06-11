@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 async def get_index_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(text="Пользователи 👥", callback_data="users")]
+            [InlineKeyboardButton(text="Пользователи 👥", callback_data="users"), InlineKeyboardButton(text="Каналы 📺", callback_data="channels")]
         ]
     )
 
@@ -21,3 +21,5 @@ async def get_default_back_keyboard() -> InlineKeyboardMarkup:
             [InlineKeyboardButton(text="Главная 🔙", callback_data="index")]
         ]
     )
+
+# базовую клаву для списков прописать
