@@ -18,6 +18,6 @@ async def get_users_keyboard(users: list[User]) -> InlineKeyboardMarkup:
 
 async def get_user_keyboard(user_role: str, user_id: int) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=user_role, callback_data=f"change_user_role_{user_id}"), InlineKeyboardButton(text=" ", callback_data=" "), InlineKeyboardButton(text="❌", callback_data="delete_user")],
+        [InlineKeyboardButton(text=user_role, callback_data=f"change_user_role_{user_id}"), InlineKeyboardButton(text="❌", callback_data="delete_user")],
         [InlineKeyboardButton(text="Назад ⬅️", callback_data="users")]
     ])
