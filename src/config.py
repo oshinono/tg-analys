@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     google_table_channels_url: str
     google_table_users_url: str
 
+    hugging_face_api_key: str
+
+    unapproved_materials_ttl_hours: int
+
     class Config:
         env_file = ".env"
 

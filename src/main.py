@@ -13,7 +13,10 @@ from providers import container
 from router import router as index_router
 from users.router import router as users_router
 from channels.router import router as channels_router
-from middlewares import DbSessionMiddleware
+from prompts.router import router as prompts_router
+from moderation.router import router as moderation_router
+from middlewares import DbSessionMiddleware, RedisClientMiddleware
+from database import REDIS_URL
 
 async def main():
     setup_logger()
@@ -23,16 +26,17 @@ async def main():
         await add_user_role_to_db(session)
         await add_superusers_to_db(session)
 
-    storage = RedisStorage.from_url(f'redis://default:{settings.redis_password}@redis:{settings.redis_port}', connection_kwargs={"password": settings.redis_password})
+    storage = RedisStorage.from_url(REDIS_URL)
         
     async with Bot(token=settings.token, default=default_bot_settings, storage=storage) as bot:
         await bot.set_my_commands(commands)
         await bot.delete_webhook(drop_pending_updates=True)
         try:
             dp = Dispatcher(storage=storage)
-            dp.include_routers(index_router, users_router, channels_router)
+            dp.include_routers(index_router, users_router, channels_router, prompts_router, moderation_router)
             
-            dp.update.middleware(DbSessionMiddleware())
+            dp.update.middleware.register(DbSessionMiddleware())
+            dp.update.middleware.register(RedisClientMiddleware())
 
             # setup_dishka(container=container, router=dp)
 

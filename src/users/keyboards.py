@@ -1,7 +1,6 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from users.models import User
-from roles.models import Role
 
 async def get_users_keyboard(users: list[User]) -> InlineKeyboardMarkup:
     b = InlineKeyboardBuilder()

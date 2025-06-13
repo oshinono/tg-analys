@@ -18,3 +18,6 @@ class Prompt(Base):
     
     created_at: Mapped[datetime] = get_created_at_column()
     updated_at: Mapped[datetime] = get_updated_at_column()
+
+    def __str__(self):
+        return self.text
