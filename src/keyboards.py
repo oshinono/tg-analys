@@ -1,6 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from database import Base
+from loguru import logger
 
 async def get_index_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
@@ -40,3 +41,9 @@ async def get_objects_keyboards(objects: list[Base], name: str) -> InlineKeyboar
     b.row(InlineKeyboardButton(text="Назад ⬅️", callback_data="index"))
 
     return b.as_markup()
+
+
+async def get_delete_message():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Скрыть", callback_data="delete_notification")]
+    ])

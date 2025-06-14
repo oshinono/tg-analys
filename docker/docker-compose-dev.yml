@@ -13,6 +13,8 @@ services:
     depends_on:
       - redis
       - postgres
+    stdin_open: true
+    tty: true
 
   redis:
     image: redis:latest

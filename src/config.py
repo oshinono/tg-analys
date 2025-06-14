@@ -28,6 +28,11 @@ class Settings(BaseSettings):
 
     unapproved_materials_ttl_hours: int
 
+    tg_api_id: str
+    tg_api_hash: str
+    tg_phone: str
+    tg_password: str
+
     class Config:
         env_file = ".env"
 

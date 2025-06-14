@@ -12,6 +12,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 CURRENT_TIMEZONE = 'Europe/Moscow'
+DATETIME_PATTERN = '%d.%m.%Y %H:%M'
 
 def get_updated_at_column() -> Mapped[datetime]:
     return mapped_column(

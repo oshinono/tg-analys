@@ -21,10 +21,10 @@ async def add_superusers_to_db(session: AsyncSession) -> bool:
         if not user:
             logger.warning(f"Пользователь с ID {superuser_id} не найден, создаю...")
             user = await UserService.create(UserCreate(id=superuser_id, 
-                                                first_name=f"Пользователь {superuser_id}", 
-                                                username=f"@super{superuser_id}",
-                                                phone_number=f"+79{random.randint(100000000, 999999999)}",
-                                                role_guid=role.guid), 
+                                                first_name="Скрыт", 
+                                                username=f"Скрыт, {superuser_id}",
+                                                phone_number=f"Скрыт, {superuser_id}",
+                                                role_id=role.id), 
                                             session)
         else:
             logger.info(f"Пользователь с ID {superuser_id} уже существует")

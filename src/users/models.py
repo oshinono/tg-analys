@@ -17,5 +17,5 @@ class User(Base):
     created_at: Mapped[datetime] = get_created_at_column()
     updated_at: Mapped[datetime] = get_updated_at_column()
 
-    role_guid: Mapped[uuid.UUID] = mapped_column(ForeignKey("roles.guid"), nullable=False)
+    role_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("roles.id"), nullable=False)
     role: Mapped["Role"] = relationship(lazy="selectin")

@@ -2,7 +2,7 @@ from aiogram.types import CallbackQuery
 from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from users.service import UserService
-
+from loguru import logger
 async def check_users_page(state: FSMContext, session: AsyncSession, callback: CallbackQuery):
     data = await state.get_data()
 

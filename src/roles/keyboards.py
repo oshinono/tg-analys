@@ -6,7 +6,7 @@ async def get_roles_keyboards(roles: list[Role]) -> InlineKeyboardMarkup:
     b = InlineKeyboardBuilder()
 
     for role in roles:
-        b.add(InlineKeyboardButton(text=role.name, callback_data=f"role_{role.guid}"))
+        b.add(InlineKeyboardButton(text=role.name, callback_data=f"role_{role.id}"))
 
     b.adjust(3, repeat=True)
     b.row(InlineKeyboardButton(text="Назад ⬅️", callback_data="back"))

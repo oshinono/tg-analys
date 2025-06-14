@@ -7,10 +7,10 @@ class UserCreate(BaseCreate):
     first_name: str
     username: Optional[str] = None
     phone_number: str
-    role_guid: uuid.UUID
+    role_id: uuid.UUID
 
 class UserUpdate(BaseUpdate):
     first_name: Optional[str] = None
     username: Optional[str] = None
     phone_number: Optional[str] = None
-    role_guid: Optional[uuid.UUID] = None
+    role_id: Optional[uuid.UUID] = None

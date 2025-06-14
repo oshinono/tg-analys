@@ -4,6 +4,8 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from redis.asyncio import from_url, Redis
 from config import settings
 import json
+from datetime import datetime
+from consts import DATETIME_PATTERN
 
 DB_HOST = settings.postgres_host
 DB_PORT = settings.postgres_port
@@ -26,7 +28,11 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 class Base(DeclarativeBase):
-    pass
+    def __getattribute__(self, name):
+        value = super().__getattribute__(name)
+        if name in ('created_at', 'updated_at') and isinstance(value, datetime):
+            return value.strftime(DATETIME_PATTERN)
+        return value
 
 class RedisClient:
     def __init__(self):

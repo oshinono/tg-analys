@@ -1,5 +1,6 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
+from keyboards import get_simple_back_keyboard
 from roles.enums import Roles
 from aiogram.fsm.context import FSMContext
 from users.service import UserService
@@ -13,6 +14,10 @@ from users.states import UserStates
 from roles.filters import AccessFilter
 from loguru import logger
 from users.dependencies import check_event_initiator, check_same_roles_event
+from users.schemas import UserCreate
+import uuid
+from telethon import TelegramClient
+from utils import clear_state
 
 router = Router()
 router.message.filter(AccessFilter(Roles.SUPERUSER))
@@ -21,13 +26,14 @@ router.callback_query.filter(AccessFilter(Roles.SUPERUSER))
 
 @router.callback_query(F.data == "users")
 async def list_users(callback: CallbackQuery, state: FSMContext, session: AsyncSession, bot: Bot):
-    await state.clear()
+    message_to_edit_id = await state.get_value('message_to_edit_id')
+    await clear_state(state)
     await state.set_state(UserStates.users)
-    
-    message_to_edit_id = callback.message.message_id
-
     await state.update_data(message_to_edit_id=message_to_edit_id)
-
+    if not message_to_edit_id:
+        message_to_edit_id = callback.message.message_id
+        await state.update_data(message_to_edit_id=message_to_edit_id)
+    
     # page_number = await check_users_page(state, session, callback)
     # limit = 6
     # offset = limit * page_number - limit
@@ -114,6 +120,47 @@ async def change_user_role_last(callback: CallbackQuery, state: FSMContext, sess
         return
 
 
-    await UserService.update(user_id, UserUpdate(role_guid=role_id), session)
+    await UserService.update(user_id, UserUpdate(role_id=role_id), session)
 
     return await user_page(callback, state, session, bot)
+
+@router.callback_query(UserStates.add_user, F.data == "back")
+async def back_from_new_user(callback: CallbackQuery, state: FSMContext, session: AsyncSession, bot: Bot):
+    await list_users(callback, state, session, bot)
+
+@router.callback_query(UserStates.users, F.data == "add_user")
+async def new_user(callback: CallbackQuery, state: FSMContext):
+    await state.set_state(UserStates.add_user)
+    await state.update_data(message_to_edit_id=callback.message.message_id)
+
+    await callback.message.edit_text(text="Введите ID или юзернейм пользователя:",
+                                  reply_markup=await get_simple_back_keyboard())
+
+@router.message(UserStates.add_user)
+async def get_info_new_user(message: Message, state: FSMContext, telethon: TelegramClient, session: AsyncSession, bot: Bot):
+    message_to_edit_id = await state.get_value('message_to_edit_id')
+
+    await message.delete()
+    
+    if not message.text:
+        return
+    try:
+        user = await telethon.get_entity(message.text.strip())
+    except:
+        return await bot.edit_message_text(text="Пользователя по такому идентификатору (ID или юзернейму) не найдено.\n\nПопробуйте еще раз",
+                                    message_id=message_to_edit_id,
+                                    chat_id=message.chat.id,
+                                    reply_markup=await get_simple_back_keyboard())
+    
+    user_role = await RoleService.get_one_or_none(session=session, name=Roles.USER)
+    user_phone = user.phone if user.phone else f'Скрыт, {user.id}'
+    await UserService.create(UserCreate(id=user.id,
+                                        first_name=user.first_name,
+                                        username=user.username,
+                                        phone_number=user_phone,
+                                        role_id=user_role.id), session)
+    return await list_users(CallbackQuery(id=uuid.uuid4().hex,
+                                   from_user=message.from_user,
+                                   chat_instance=str(message.from_user.id),
+                                   message=message),
+                    state, session, bot)

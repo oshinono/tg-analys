@@ -9,7 +9,7 @@ from database import RedisClient
 from prompts.models import Prompt
 from prompts.schemas import UnapprovedPrompt, PromptCreate
 from prompts.service import PromptService
-from keyboards import get_simple_back_keyboard
+from keyboards import get_simple_back_keyboard, get_delete_message
 from prompts.dependencies import audio_message_to_text
 import uuid
 from loguru import logger
@@ -86,7 +86,9 @@ async def approve_prompt(callback: CallbackQuery, state: FSMContext, session: As
 
     approved = await PromptService.create(PromptCreate(**prompt), session)
 
-    await bot.send_message(chat_id=creator_id, text=f"Ваш промпт был одобрен модерацией ✅\n\n{approved.text}")
+    await bot.send_message(chat_id=creator_id, 
+                           text=f"Ваш промпт был одобрен модерацией ✅\n\n{approved.text}",
+                           reply_markup=await get_delete_message())
     
     await redis.delete(f"unapproved_prompt_{prompt_id}")
     await callback.answer(text="Вы одобрили промпт.", show_alert=True)
@@ -119,7 +121,9 @@ async def prompt_rejected_with_message(message: Message, state: FSMContext, redi
     prompt_id = await state.get_value('unapproved_prompt_id')
     prompt = await redis.get(f"unapproved_prompt_{prompt_id}")
 
-    await bot.send_message(chat_id=prompt["creator_id"], text=f"Ваш промпт был отклонен модерацией ❌\n\nПромпт: {prompt['text']}\n\nПравки: {transcribe}")
+    await bot.send_message(chat_id=prompt["creator_id"], 
+                           text=f"Ваш промпт был отклонен модерацией ❌\n\nПромпт: {prompt['text']}\n\nПравки: {transcribe}",
+                           reply_markup=await get_delete_message())
 
     await redis.delete(f"unapproved_prompt_{prompt_id}")
 

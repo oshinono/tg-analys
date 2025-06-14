@@ -12,7 +12,7 @@ class Role(Base):
         CheckConstraint("permission_level >= 0"),
     )
 
-    guid: Mapped[uuid.UUID] = mapped_column(types.Uuid, primary_key=True, server_default=text("gen_random_uuid()"))
+    id: Mapped[uuid.UUID] = mapped_column(types.Uuid, primary_key=True, server_default=text("gen_random_uuid()"))
     name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     permission_level: Mapped[int] = mapped_column(nullable=False, index=True)
     created_at: Mapped[datetime] = get_created_at_column()

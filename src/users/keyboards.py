@@ -10,7 +10,7 @@ async def get_users_keyboard(users: list[User]) -> InlineKeyboardMarkup:
     
     b.adjust(2, repeat=True)
     
-    b.row(InlineKeyboardButton(text="➕", callback_data="add_new_user"))
+    b.row(InlineKeyboardButton(text="➕", callback_data="add_user"))
     b.row(InlineKeyboardButton(text="Назад ⬅️", callback_data="index"))
 
     return b.as_markup()

@@ -4,5 +4,6 @@ class UserStates(StatesGroup):
     users = State()
     user = State()
     change_user_role = State()
-    add_new_user = State()
+    add_user = State()
+    user_not_found = State()
     
